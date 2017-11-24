@@ -4,6 +4,7 @@ from flask import request
 from compiler import lexer
 app = Flask(__name__)
 
+PORT = 4000
 
 lexer_engine = lexer.LexerEngine()
 
@@ -19,4 +20,4 @@ def api_lexer():
 
 
 if __name__ == "__main__":
-    app.run(host='0.0.0.0', port=5001)
+    app.run(host='0.0.0.0', port=PORT)
