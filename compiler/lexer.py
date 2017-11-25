@@ -45,7 +45,7 @@ class LexerEngine:
 
 def main():
     lexer = LexerEngine()
-    with open('../program.txt') as f:
+    with open('../doc/program.txt') as f:
         ret, error = lexer.process(f.read())
         # print(ret)
         # print(error)
