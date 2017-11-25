@@ -1,4 +1,5 @@
 import re
+import struct
 
 
 lexicon = [
@@ -34,7 +35,12 @@ class LexerEngine:
                 error += 'Error at {}'.format(cur)
                 # print(error)
                 return ret, error
-            if token[0] is not 'blank':
+            if token[0] is 'blank':
+                continue
+            elif token[0] is 'constant' and '.' not in token[1]:
+                # integer constant
+                ret += token[0] + ' ' + bin(int(token[1])) + '\n'
+            else:
                 ret += token[0] + ' ' + token[1] + '\n'
                 # print(token[0], token[1])
         return ret, error
@@ -47,8 +53,8 @@ def main():
     lexer = LexerEngine()
     with open('../doc/program.txt') as f:
         ret, error = lexer.process(f.read())
-        # print(ret)
-        # print(error)
+        print(ret)
+        print(error)
 
 if __name__ == '__main__':
     main()
