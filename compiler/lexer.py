@@ -39,9 +39,9 @@ class LexerEngine:
                 continue
             elif token[0] is 'constant' and '.' not in token[1]:
                 # integer constant
-                ret += token[0] + ' ' + bin(int(token[1])) + '\n'
+                ret += '{}\t{}\n'.format(token[0], bin(int(token[1])))
             else:
-                ret += token[0] + ' ' + token[1] + '\n'
+                ret += '{}\t{}\n'.format(token[0], token[1])
                 # print(token[0], token[1])
         return ret, error
 
