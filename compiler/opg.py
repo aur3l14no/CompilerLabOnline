@@ -108,7 +108,7 @@ class OPGEngine:
 
     def analyse(self, program):
         template = '{step:>3}    {stack:60}    {priority:3}   {cur_sym:3}    {program_remaining:40}'
-        stack = deque()
+        stack = []
         cur = 0
         step = 0
 
