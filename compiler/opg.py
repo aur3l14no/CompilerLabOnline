@@ -37,7 +37,7 @@ class OPGEngine:
         # 0   :   =
         # ?   :   ?
 
-        def calc_F(flag):  # calculate FIRSTVT(flag==0) and LASTVT(flag!=0)
+        def calc_f(flag):  # calculate FIRSTVT(flag==0) and LASTVT(flag!=0)
             stack = deque()
             F = []
 
@@ -65,26 +65,36 @@ class OPGEngine:
                             insert(rule.left, b)
             return F
 
-        first_vt = calc_F(0)
-        last_vt = calc_F(1)
+        def insert(container, key, element):
+            if key in container and container[key] != element:
+                raise Exception('Not OPG')
+            else:
+                container[key] = element
+
+        first_vt = calc_f(0)
+        last_vt = calc_f(1)
         # print(first_vt)
         # print(last_vt)
-        for rule in self.rules:
-            right = rule.right
-            for i in range(len(right) - 1):
-                if right[i] in self.V_t and right[i + 1] in self.V_t:
-                    self.priority_tab[(right[i], right[i + 1])] = 0
-                if i < len(right) - 2 and right[i] in self.V_t and right[i + 1] in self.V_n and right[i + 2] in self.V_t:
-                    self.priority_tab[(right[i], right[i + 2])] = 0
-                if right[i] in self.V_t and right[i + 1] in self.V_n:
-                    for x, b in first_vt:
-                        if x == right[i + 1]:
-                            self.priority_tab[(right[i], b)] = -1
-                if right[i] in self.V_n and right[i + 1] in self.V_t:
-                    for x, a in last_vt:
-                        if x == right[i]:
-                            self.priority_tab[(a, right[i + 1])] = 1
-        return self.priority_tab
+        try:
+            for rule in self.rules:
+                right = rule.right
+                for i in range(len(right)-1):
+                    if right[i] in self.V_t and right[i+1] in self.V_t:
+                        insert(self.priority_tab, (right[i], right[i+1]), 0)
+                    if i < len(right)-2 and right[i] in self.V_t and right[i+1] in self.V_n and right[i+2] in self.V_t:
+                        insert(self.priority_tab, (right[i], right[i+2]), 0)
+                    if right[i] in self.V_t and right[i+1] in self.V_n:
+                        for x, b in first_vt:
+                            if x == right[i+1]:
+                                insert(self.priority_tab, (right[i], b), -1)
+                    if right[i] in self.V_n and right[i+1] in self.V_t:
+                        for x, a in last_vt:
+                            if x == right[i]:
+                                insert(self.priority_tab, (a, right[i+1]), 1)
+            return True
+        except:
+            print('Not OPG')
+            return False
 
     def print_priority_tab(self):
         print(' \t', end='')
@@ -146,7 +156,7 @@ class OPGEngine:
                 stack=''.join(stack),
                 priority='?' if priority is None else PRIORITY_SYM[priority],
                 cur_sym=cur_sym,
-                remaining=program[min(len(program), cur + 1):]))
+                remaining=program[min(len(program), cur+1):]))
 
             if priority == 1:
                 t = ''
@@ -179,12 +189,12 @@ class OPGEngine:
 def main():
     with open('../doc/og.txt') as f:
         raw_rules = [*f.read().split('\n')]
+    program = 'i+i*(i+i)'
     opg_engine = OPGEngine()
     opg_engine.import_rules(raw_rules)
-    opg_engine.calc_priority_tab()
-    # opg_engine.print_priority_tab()
-    program = 'i+i*(i+i)'
-    opg_engine.analyse(program)
+    if opg_engine.calc_priority_tab():
+        # opg_engine.print_priority_tab()
+        opg_engine.analyse(program)
 
 
 if __name__ == '__main__':

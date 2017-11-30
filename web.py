@@ -40,11 +40,11 @@ def api_opg():
     with redirect_stdout(s):
         opg_engine = opg.OPGEngine()
         raw_rules = [*request.form['grammar'].replace('\r', '').split('\n')]
-        opg_engine.import_rules(raw_rules)
-        opg_engine.calc_priority_tab()
-        opg_engine.print_priority_tab()
-        print()
         program = request.form['code'].strip()
+        opg_engine.import_rules(raw_rules)
+        if opg_engine.calc_priority_tab():
+            opg_engine.print_priority_tab()
+            print()
         opg_engine.analyse(program)
     # print(s.getvalue())
     return s.getvalue()
