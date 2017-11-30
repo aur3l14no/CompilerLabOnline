@@ -116,12 +116,10 @@ class OPGEngine:
             print('Error at {}'.format(cur))
 
         def reduce(seg):
-            v_t = None
-            for v in seg:
-                if v in self.V_t:
-                    v_t = v
+            seg = ''.join([*map(lambda x: '$' if x in self.V_n else x, seg)])
             for rule in self.rules:
-                if v_t in rule.right:
+                right = ''.join([*map(lambda x: '$' if x in self.V_n else x, rule.right)])
+                if seg == right:
                     return rule.left
 
         while cur <= len(program):
@@ -161,7 +159,12 @@ class OPGEngine:
                     if len(stack) == 0:
                         break
                 t = t[::-1]
-                stack.append(reduce(t))
+                reduced = reduce(t)
+                if reduced:
+                    stack.append(reduce(t))
+                else:
+                    error()
+                    break
             elif priority == 0 or priority == -1:
                 stack.append(cur_sym)
                 cur += 1
@@ -177,7 +180,7 @@ def main():
     opg_engine.import_rules(raw_rules)
     opg_engine.calc_priority_tab()
     # opg_engine.print_priority_tab()
-    program = 'i'
+    program = 'i+i*(i+i)'
     opg_engine.analyse(program)
 
 
