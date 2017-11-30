@@ -13,7 +13,7 @@ class OPGEngine:
         self.V = set()
         self.V_n = set()
         self.V_t = set()
-        self.terminal = ''
+        self.identifier = ''
         self.priority_tab = dict()
 
     def import_rules(self, raw_rules):
@@ -21,7 +21,7 @@ class OPGEngine:
             left, right = rule.split('->')
             for right_seg in right.split('|'):
                 self.rules.append(Rule(left, right_seg))
-        self.terminal = self.rules[0].left
+        self.identifier = self.rules[0].left
         for rule in self.rules:
             for v in rule.right:
                 self.V.add(v)
@@ -107,7 +107,8 @@ class OPGEngine:
             print()
 
     def analyse(self, program):
-        template = '{step:>3}    {stack:60}    {priority:3}   {cur_sym:3}    {program_remaining:40}'
+        template = '{step:>4}    {stack:{program_length}}    {priority:^8}   {cur_sym:^7}    {remaining:40}'\
+            .replace('{program_length}', str(max(8, len(program))))
         stack = []
         cur = 0
         step = 0
@@ -122,10 +123,12 @@ class OPGEngine:
                 if seg == right:
                     return rule.left
 
+        print(template.format(step='STEP', stack='STACK', priority='PRIORITY', cur_sym='CUR_SYM', remaining='REMAINS'))
         while cur <= len(program):
             step += 1
-            if len(stack) == 1 and stack[-1] == self.terminal and cur == len(program):
-                print(template.format(step=step, stack=str(stack), priority='END', cur_sym='', program_remaining=''))
+            if len(stack) == 1 and stack[-1] == self.identifier and cur == len(program):
+                # entire program is treated, stack has only one identifier
+                print(template.format(step=step, stack=''.join(stack), priority='END', cur_sym='', remaining=''))
                 break
             if cur == len(program):
                 cur_sym = ''
@@ -140,10 +143,10 @@ class OPGEngine:
 
             print(template.format(
                 step=step,
-                stack=str(stack),
+                stack=''.join(stack),
                 priority='?' if priority is None else PRIORITY_SYM[priority],
                 cur_sym=cur_sym,
-                program_remaining=program[min(len(program), cur + 1):]))
+                remaining=program[min(len(program), cur + 1):]))
 
             if priority == 1:
                 t = ''

@@ -43,9 +43,10 @@ def api_opg():
         opg_engine.import_rules(raw_rules)
         opg_engine.calc_priority_tab()
         opg_engine.print_priority_tab()
-        program = request.form['code']
+        print()
+        program = request.form['code'].strip()
         opg_engine.analyse(program)
-    print(s.getvalue())
+    # print(s.getvalue())
     return s.getvalue()
 
 if __name__ == "__main__":
