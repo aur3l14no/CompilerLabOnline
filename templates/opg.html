@@ -26,11 +26,11 @@
 
       <div class="collapse navbar-collapse" id="navbarsExample02">
         <ul class="navbar-nav mr-auto">
-          <li class="nav-item active">
-            <a class="nav-link" href="#">Lexer <span class="sr-only">(current)</span></a>
-          </li>
           <li class="nav-item inactive">
-            <a class="nav-link" href="opg">OPG Parser</a>
+            <a class="nav-link" href="lexer">Lexer</a>
+          </li>
+          <li class="nav-item active">
+            <a class="nav-link" href="#">OPG Parser <span class="sr-only">(current)</span></a>
           </li>
         </ul>
       </div>
@@ -38,50 +38,44 @@
     
 
     <div class="container">
-      <h3> Code </h3>
       <div class="form-group">
-        <form id="input-form">
-          <textarea class="form-control" rows="15" id="code" name="code"></textarea>
-          <br />
-          <input id="input-file" name="input-file" type="file" class="file" onchange=loadFile()>
-          <br />
-          <br />
-          <button type="submit" class="btn btn-secondary">Run</button>
-        </form>
-      </div>
-      <hr>
-      <h3> Result </h3>
-      <div id="result">
-      </div>
+        <form id="codeform">
+            <div class="row">
+              <div class="col">
+                <h3> Grammar </h3>
+                <textarea class="form-control" rows="15" id="grammar" name="grammar"></textarea>
+                <br />
+                <button type="submit" class="btn btn-secondary pull-right">Run</button>
+              </div>
+              <div class="col">
+                <h3> Code </h3>
+                <textarea class="form-control" rows="15" id="code" name="code"></textarea>
+              </div>
+            </form>
+          </div>
+        </div>
+        <hr>
+        <h3> Result </h3>
+        <div id="result">
+        </div>
     </div>
 
 
     <script>
-      $('#input-form').submit(function(e){
+      $('#codeform').submit(function(e){
           e.preventDefault();
           $.ajax({
-              url:'/api/v1/lexer',
+              url:'/api/v1/opg',
               type:'post',
-              data:$('#input-form').serialize(),
+              data:$('#codeform').serialize(),
               success: function(response){
                   $('#result').html('<pre>'+response+'</pre>');
               }
           });
       });
-
-      function loadFile() {
-        var file = document.getElementById("input-file").files[0];
-        if (file) {
-            var reader = new FileReader();
-            reader.readAsText(file, "UTF-8");
-            reader.onload = function (evt) {
-                $("#codearea").val(evt.target.result);
-            }
-            reader.onerror = function (evt) {
-                alert("error reading file");
-            }
-        }
-      }
+      window.onload = function() {
+        $('#grammar').val('E->E+T|T\nT->T*F|F\nF->(E)|i')
+      };
     </script>
   </body>
 </html>

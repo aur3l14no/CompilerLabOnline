@@ -32,18 +32,16 @@ class LexerEngine:
                     token = (word[0], r.group())
             cur += max_length
             if max_length == 0:
-                error += 'Error at {}'.format(cur)
-                # print(error)
-                return ret, error
+                print('Error at {}'.format(cur))
+                break
             if token[0] is 'blank':
                 continue
             elif token[0] is 'constant' and '.' not in token[1]:
                 # integer constant
-                ret += '{}\t{}\n'.format(token[0], bin(int(token[1])))
+                print('{}\t{}'.format(token[0], bin(int(token[1]))))
             else:
-                ret += '{}\t{}\n'.format(token[0], token[1])
+                print('{}\t{}'.format(token[0], token[1]))
                 # print(token[0], token[1])
-        return ret, error
 
     def error(self, pos):
         pass
@@ -52,9 +50,7 @@ class LexerEngine:
 def main():
     lexer = LexerEngine()
     with open('../doc/program.txt') as f:
-        ret, error = lexer.process(f.read())
-        print(ret)
-        print(error)
+        lexer.process(f.read())
 
 if __name__ == '__main__':
     main()
