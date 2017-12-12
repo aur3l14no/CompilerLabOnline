@@ -92,7 +92,7 @@ class OPGEngine:
                             if x == right[i]:
                                 insert(self.priority_tab, (a, right[i+1]), 1)
             return True
-        except:
+        except Exception as e:
             print('Not OPG')
             return False
 

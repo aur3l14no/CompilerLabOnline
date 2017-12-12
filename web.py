@@ -45,7 +45,7 @@ def api_opg():
         if opg_engine.calc_priority_tab():
             opg_engine.print_priority_tab()
             print()
-        opg_engine.analyse(program)
+            opg_engine.analyse(program)
     # print(s.getvalue())
     return s.getvalue()
 
