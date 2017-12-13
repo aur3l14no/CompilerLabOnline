@@ -1,11 +1,9 @@
+from contextlib import redirect_stdout
+from io import StringIO
 from flask import Flask
 from flask import render_template
 from flask import request
-from compiler import lexer
-from compiler import opg
-from contextlib import redirect_stdout
-from io import StringIO
-
+from toy import lexer, opg
 
 app = Flask(__name__)
 
