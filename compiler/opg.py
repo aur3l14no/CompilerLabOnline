@@ -1,5 +1,3 @@
-import re
-from io import StringIO
 from collections import namedtuple
 from collections import deque
 
@@ -117,7 +115,7 @@ class OPGEngine:
             print()
 
     def analyse(self, program):
-        template = '{step:>4}    {stack:{program_length}}    {priority:^8}   {cur_sym:^7}    {remaining:40}'\
+        template = '{step:>4}    {stack:{program_length}}    {priority:^8}    {cur_sym:^7}    {remaining:{program_length}}'\
             .replace('{program_length}', str(max(8, len(program))))
         stack = []
         cur = 0
