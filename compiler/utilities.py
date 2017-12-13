@@ -12,3 +12,4 @@ class Logger(object):
         self.f.write('ERROR: ' + (msg % args) + '\n')
 
     info = critical
+    debug = critical

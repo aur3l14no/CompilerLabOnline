@@ -2,12 +2,12 @@ import re
 
 
 lexicon = [
-    ['blank', '\s'],
-    ['key_word', 'const|var|procedure|if|then|else|while|do|call|begin|end|repeat|until|read|write|odd'],
-    ['delimiter', '\.|\(|\)|,|;'],
-    ['operator', '\+|-|\*|/|:=|=|<>|<|<=|>=|>'],
-    ['identifier', '[A-Za-z][A-Za-z0-9]*'],
-    ['constant', '\d+(\.\d+)?']
+    ('BLANK', '\s'),
+    ('KEYWORD', 'const|var|procedure|if|then|else|while|do|call|begin|end|repeat|until|read|write|odd'),
+    ('DELIMITER', '\.|\(|\)|,|;'),
+    ('OPERATOR', '\+|-|\*|/|:=|=|<>|<|<=|>=|>'),
+    ('IDENTIFIER', '[A-Za-z][A-Za-z0-9]*'),
+    ('CONSTANT', '\d+(\.\d+)?')
 ]
 
 
@@ -19,8 +19,6 @@ class LexerEngine:
 
     def process(self, program):
         cur = 0
-        ret = ''
-        error = ''
         while cur < len(program):
             max_length = 0
             token = ()
