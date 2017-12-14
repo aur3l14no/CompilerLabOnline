@@ -3,6 +3,7 @@ from collections import namedtuple
 from compiler.exceptions import *
 
 Token = namedtuple('Token', 'type, value')
+Token.__new__.__defaults__ = (None,) * len(Token._fields)
 
 
 lexicon = [
