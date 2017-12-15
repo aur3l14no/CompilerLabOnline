@@ -1,9 +1,33 @@
 from compiler.lexer import Lexer, Token
 from compiler.exceptions import *
 from collections import namedtuple
+from enum import Enum, auto
+from copy import copy, deepcopy
 
-Record = namedtuple('Record', 'type, name, value, level, address, size')
-Record.__new__.__defaults__ = (None, None, None, None, None, 0)
+PCode = namedtuple('PCode', 'op_code, l, a')
+
+
+class OpCode(Enum):
+    LIT = auto()
+    OPR = auto()
+    LOD = auto()
+    STO = auto()
+    CAL = auto()
+    INT = auto()
+    JMP = auto()
+    JPC = auto()
+    RED = auto()
+    WRT = auto()
+
+
+class Record:
+    def __init__(self, type_=None, name=None, value=None, level=None, address=None, size=0):
+        self.type = type_
+        self.name = name
+        self.value = value
+        self.level = level
+        self.address = address
+        self.size = size
 
 
 class SymTable:
@@ -11,18 +35,32 @@ class SymTable:
         self.table = []
         self.dx = 3
 
-    def get(self, name):
+    def get(self, name, type_=None):
         for record in self.table[::-1]:
             if record.name == name:
-                return record
+                if type_ and record.type != type_:
+                    raise WrongSymbolType('Unexpected symbol type, expecting %s' % type_)
+                else:
+                    return record
         raise UndefinedSymbol('Undefined symbol: %s' % name)
 
     def enter(self, record):
-        if self.get(record.name) is not None:
-            raise DuplicateSymbol('Duplicate symbol name: %s' % record.name)
-        else:
-            self.table.append(record)
+        try:
+            self.get(record.name)
+        except ParserError:  # name not exists
+            self.table.append(deepcopy(record))
             self.dx += 1
+            return
+        # name exists
+        raise DuplicateSymbol('Duplicate symbol name: %s' % record.name)
+
+
+class PCodeManager:
+    def __init__(self):
+        self.code = []
+
+    def gen(self, op_code, l, a):
+        self.code.append(PCode(op_code, l, a))
 
 
 class Parser:
@@ -30,8 +68,10 @@ class Parser:
         self.lexer = Lexer()
         self.token_generator = None
         self.current_token: Token = None
+        self.current_level = -1
         self.obj = ''
         self.table = SymTable()
+        self.pcode = PCodeManager()
 
     def load_program(self, program):
         self.lexer.load_program(program)
@@ -48,12 +88,12 @@ class Parser:
 
     def _program(self):
         self._forward()
-        self._block(0)
+        self._block()
         self._expect(Token(None, '.'))
         print('Compile Successful!')
         print(self.obj)
 
-    def _block(self, level):
+    def _block(self):
         def _const():
             def _const_decl():
                 self._expect(Token('IDENTIFIER', None))
@@ -65,7 +105,7 @@ class Parser:
                 record.value = int(self.current_token.value)
                 self.table.enter(record)
                 self._forward()
-            record = Record('const', None, None, level)
+            record = Record('const', None, None, self.current_level)
             self._expect(Token(None, 'const'))
             self._forward()
             _const_decl()
@@ -81,7 +121,8 @@ class Parser:
                 record.name = self.current_token.value
                 self.table.enter(record)
                 self._forward()
-            record = Record('var', None, None, level)
+            record = Record('var', None, None, self.current_level)
+
             self._expect(Token(None, 'var'))
             self._forward()
             _var_decl()
@@ -92,7 +133,7 @@ class Parser:
             self._forward()
 
         def _procedure():  # controversial, may require modifications
-            record = Record('procedure', None, None, level)
+            record = Record('procedure', None, None, self.current_level)
             self._expect(Token(None, 'procedure'))
             self._forward()
             self._expect(Token('IDENTIFIER', None))
@@ -101,11 +142,12 @@ class Parser:
             self._forward()
             self._expect(Token(None, ';'))
             self._forward()
-            self._block(level+1)
+            self._block()
             while self.current_token.value != ';':
                 _procedure()
             self._forward()
 
+        self.current_level += 1
         self.table.dx = 3
         if self.current_token.value == 'const':
             _const()
@@ -117,19 +159,29 @@ class Parser:
 
     def _statement(self):
         if self.current_token.type == 'IDENTIFIER':
+            record = self.table.get(self.current_token.value, 'var')
             self._forward()
             self._expect(Token(None, ':='))
             self._forward()
             self._expression()
+            self.pcode.gen(OpCode.STO, record.level-self.current_level, record.address)
+
         elif self.current_token.value == 'if':
             self._forward()
             self._condition()
             self._expect(Token(None, 'then'))
             self._forward()
-            self._statement()
-            while self.current_token.value == 'else':
-                self._statement()
+            code1 = len(self.pcode.code)
+            self.pcode.gen(OpCode.JPC, 0, 0)
+            self._statement()  # then statement
+            code2 = len(self.pcode.code)
+            self.pcode.gen(OpCode.JMP, 0, 0)
+            if self.current_token.value == 'else':
                 self._forward()
+                self.pcode.code[code1] = len(self.pcode.code)
+                self._statement()  # else statement
+            self.pcode.code[code2] = len(self.pcode.code)
+
         elif self.current_token.value == 'while':
             self._forward()
             self._condition()
@@ -139,6 +191,8 @@ class Parser:
         elif self.current_token.value == 'call':
             self._forward()
             self._expect(Token('IDENTIFIER', None))
+            record = self.table.get(self.current_token.value, 'procedure')
+            self.pcode.gen(OpCode.CAL, record.level-self.current_level, record.address)
             self._forward()
         elif self.current_token.value == 'begin':
             self._forward()
@@ -185,28 +239,68 @@ class Parser:
     def _condition(self):
         if self.current_token.value == 'odd':
             self._forward()
+            self._expression()
+            self.pcode.gen(OpCode.OPR, 0, 6)
         else:
             self._expression()
             self._expect(Token('RELATIONAL_OPERATOR', None))
+            op = self.current_token.value
             self._forward()
-        self._expression()
+            self._expression()
+            if op == '=':
+                self.pcode.gen(OpCode.OPR, 0, 8)
+            elif op == '<>':
+                self.pcode.gen(OpCode.OPR, 0, 9)
+            elif op == '<':
+                self.pcode.gen(OpCode.OPR, 0, 10)
+            elif op == '>=':
+                self.pcode.gen(OpCode.OPR, 0, 11)
+            elif op == '>':
+                self.pcode.gen(OpCode.OPR, 0, 12)
+            elif op == '<=':
+                self.pcode.gen(OpCode.OPR, 0, 13)
 
     def _expression(self):
         if self.current_token.type == 'PLUS_OPERATOR':  # unary operator
-            self._forward()
-        self._term()
-        while self.current_token.type == 'PLUS_OPERATOR':  # binary operator
+            op = self.current_token.value
             self._forward()
             self._term()
+            if op == '-':
+                self.pcode.gen(OpCode.OPR, 0, 1)
+        else:
+            self._term()
+        while self.current_token.type == 'PLUS_OPERATOR':  # binary operator
+            op = self.current_token.value
+            self._forward()
+            self._term()
+            if op == '+':
+                self.pcode.gen(OpCode.OPR, 0, 2)
+            else:
+                self.pcode.gen(OpCode.OPR, 0, 2)
 
     def _term(self):
         self._factor()
         while self.current_token.type == 'MULTIPLY_OPERATOR':
+            op = self.current_token.value
             self._forward()
             self._factor()
+            if op == '*':
+                self.pcode.gen(OpCode.OPR, 0, 4)
+            else:
+                self.pcode.gen(OpCode.OPR, 0, 5)
 
     def _factor(self):
-        if self.current_token.type in ('IDENTIFIER', 'NUMBER'):
+        if self.current_token.type == 'IDENTIFIER':
+            record = self.table.get(self.current_token.value)
+            if record.type == 'const':
+                self.pcode.gen(OpCode.LIT, 0, record.value)
+            elif record.type == 'var':
+                self.pcode.gen(OpCode.LOD, record.level-self.current_level, record.address)
+            elif record.type == 'procedure':
+                raise ParserError('Wrong variable type')
+            self._forward()
+        elif self.current_token.type == 'NUMBER':
+            self.pcode.gen(OpCode.LIT, 0, int(self.current_token.value))
             self._forward()
         else:
             self._expect(Token(None, '('))
@@ -233,6 +327,8 @@ class Parser:
                               self.lexer.pos)
 
 
+
+
 def main():
     parser = Parser()
     with open('../doc/program.txt') as f:
@@ -240,6 +336,7 @@ def main():
         try:
             parser.analyze()
         except ParserError as e:
+            e.pos = parser.lexer.pos
             print(e)
             raise e
 

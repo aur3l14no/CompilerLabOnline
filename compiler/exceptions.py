@@ -22,4 +22,8 @@ class UndefinedSymbol(ParserError):
         self.pos = pos
 
 
+class WrongSymbolType(ParserError):
+    def __init__(self, message='Unexpected symbol type', pos=(0, 0)):
+        self.message = message
+        self.pos = pos
 
