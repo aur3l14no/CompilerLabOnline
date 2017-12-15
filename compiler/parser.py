@@ -150,11 +150,13 @@ class Parser:
             self._expect(Token(None, ';'))
             self._forward()
 
-        def _var(dx):
-            def _var_decl(dx):
+        def _var():
+            def _var_decl():
+                nonlocal dx
                 self._expect(Token('IDENTIFIER', None))
                 record.name = self.current_token.value
                 record.address = dx
+                dx += 1
                 self.table.enter(record)
                 self._forward()
             record = Record('var', None, None, self.current_level)
@@ -163,8 +165,7 @@ class Parser:
             self._forward()
 
             while True:
-                _var_decl(dx)
-                dx += 1
+                _var_decl()
                 if self.current_token.value == ',':
                     self._forward()
                 else:
@@ -196,7 +197,7 @@ class Parser:
         if self.current_token.value == 'const':
             _const()
         if self.current_token.value == 'var':
-            dx = _var(dx)
+            _var()
         if self.current_token.value == 'procedure':
             _procedure()
         self.pcode[code1].a = len(self.pcode)  # fill back the JMP inst
