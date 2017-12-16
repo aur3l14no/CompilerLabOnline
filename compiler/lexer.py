@@ -51,6 +51,10 @@ class Lexer:
                 yield token
                 # print(token[0], token[1])
 
+    def get_line(self, ln):
+        return self.program.split('\n')[ln-1].strip()
+
+
 
 def main():
     lexer = Lexer()

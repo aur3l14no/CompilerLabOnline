@@ -11,7 +11,14 @@
     <!-- Bootstrap core CSS -->
     <link href="css/bootstrap.min.css" rel="stylesheet">
 
+    <style type="text/css" media="screen">
+        #editor { 
+            height: 200px;
+        }
+    </style>
+
     <script type="text/javascript" src="js/jquery-3.2.1.min.js"></script>
+    <script src="ace/ace.js" type="text/javascript" charset="utf-8"></script>
   </head>
 
   <body>
@@ -39,7 +46,10 @@
       <h3> Code </h3>
       <div class="form-group">
         <form id="codeform">
-          <textarea class="form-control" rows="10" id="codearea" name="code"></textarea>
+          <div class="">
+          <div id="editor">
+            sdfsdf
+          </div>
           <br />
           <input id="input-file" name="input-file" type="file" class="file" onchange=loadFile()>
           <br />
@@ -55,6 +65,10 @@
 
 
     <script>
+      var editor = ace.edit("editor");
+      editor.setTheme("ace/theme/monokai");
+      editor.getSession().setMode("ace/mode/pascal");
+
       $('#codeform').submit(function(e){
           e.preventDefault();
           $.ajax({

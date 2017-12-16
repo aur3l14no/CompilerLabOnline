@@ -15,6 +15,7 @@
     <link href="{{ url_for('static',filename='css/my.css') }}" rel="stylesheet">
 
     <script type="text/javascript" src="{{ url_for('static',filename='js/jquery-3.2.1.min.js') }}"></script>
+    <script type="text/javascript" src="{{ url_for('static',filename='ace/ace.js') }}"></script>
   </head>
 
   <body>
@@ -26,14 +27,14 @@
 
       <div class="collapse navbar-collapse" id="navbarsExample02">
         <ul class="navbar-nav mr-auto">
-          <li class="nav-item active">
-            <a class="nav-link" href="#">Lexer <span class="sr-only">(current)</span></a>
+          <li class="nav-item inactive">
+            <a class="nav-link" href="lexer">Lexer</a>
           </li>
           <li class="nav-item inactive">
             <a class="nav-link" href="opg">OPG Parser</a>
           </li>
-          <li class="nav-item inactive">
-            <a class="nav-link" href="parser">Parser</a>
+          <li class="nav-item active">
+            <a class="nav-link" href="#">Parser <span class="sr-only">(current)</span></a>
           </li>
           <li class="nav-item inactive">
             <a class="nav-link" href="interpreter">Interpreter</a>
@@ -44,36 +45,36 @@
     
 
     <div class="container">
-      <h3> Code </h3>
-      <div class="form-group">
-        <form id="input-form">
-          <textarea class="form-control" rows="15" id="code" name="code"></textarea>
+      <div class="row">
+        <div class="col">
+          <h3> PL/0 Code </h3>
+          <pre id="editor" name="code" style="height: 500px;"> </pre>
           <br />
           <input id="input-file" name="input-file" type="file" class="file" onchange=loadFile()>
           <br />
           <br />
-          <button type="submit" class="btn btn-secondary">Run</button>
-        </form>
-      </div>
-      <hr>
-      <h3> Result </h3>
-      <div id="result">
+          <button type="submit" id="submit" class="btn btn-secondary">Parse</button>
+          <button id="copy" class="btn btn-secondary">Copy</button>
+        </div>
+        <div class="col">
+          <h3> P-Code </h3>
+          <pre id="result" style="white-space: pre-wrap;word-wrap: break-word;"></pre>
+        </div>
       </div>
     </div>
 
 
     <script>
-      $('#input-form').submit(function(e){
-          e.preventDefault();
-          $.ajax({
-              url:'/api/v1/lexer',
-              type:'post',
-              data:$('#input-form').serialize(),
-              success: function(response){
-                  $('#result').html('<pre>'+response+'</pre>');
-              }
-          });
-      });
+      var editor = ace.edit("editor");
+      editor.getSession().setMode("ace/mode/pascal");
+
+      function copyToClipboard(string) {
+        var $temp = $("<textarea>");
+        $("body").append($temp);
+        $temp.val(string).select();
+        document.execCommand("copy");
+        $temp.remove();
+      }
 
       function loadFile() {
         var file = document.getElementById("input-file").files[0];
@@ -81,13 +82,34 @@
             var reader = new FileReader();
             reader.readAsText(file, "UTF-8");
             reader.onload = function (evt) {
-                $("#code").val(evt.target.result);
+                editor.setValue(evt.target.result);
             }
             reader.onerror = function (evt) {
                 alert("error reading file");
             }
         }
-      }
+      };
+
+      $('#submit').click(function(e){
+          e.preventDefault();
+          $.ajax({
+              url:'/api/v1/parser',
+              type:'post',
+              data: {'code': editor.getValue()},
+              success: function(response){
+                  $('#result').html(response);
+              }
+          });
+      });
+
+      $('#copy').click(function(e){
+          copyToClipboard($('#result').html());
+      });
+
+      window.onload = function() {
+        editor.setValue('const a = 45, b = 27;\nvar x, y, g, m;\nprocedure swap;\n    var temp;\n    begin\n        temp := x;\n        x := y;\n      y := temp\n  end;\n\nprocedure mod;\n  x := x-x/y*y;\n\nbegin\n  x := a;\n    y := b;\n    call mod;\n    while x <> 0 do\n        begin\n            call swap;\n            call mod\n        end;\n    g := y;\n    m := a*b/g;\n    write(g, m)\nend.')
+      };
+
     </script>
   </body>
 </html>

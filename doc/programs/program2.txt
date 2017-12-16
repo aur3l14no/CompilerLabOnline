@@ -6,13 +6,16 @@ begin
   a := x;
   b := y;
   z := 0;
+  write(a, b);
   while b > 0 do
   begin
+    write(a, b);
     if odd z then z := z + a;
     a := 2 * a;
-    b := b / 2
+    b := b / 2;
+    write(a, b)
   end
-end
+end;
 
 procedure divide;
 var w;
@@ -31,7 +34,7 @@ begin
       q := q + 1
     end
   end
-end
+end;
 
 procedure gcd;
 var f, g;
@@ -44,9 +47,10 @@ begin
     if g < f then f := f - g
   end;
   z := f
-end
+end;
 
 procedure fact;
+var f;
 begin
   if n > 1 then
   begin
@@ -54,7 +58,7 @@ begin
     n := n - 1;
     call fact
   end
-end;;;;
+end;
 
 begin
   read (x); read (y); call multiply; write (z);

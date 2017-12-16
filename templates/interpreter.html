@@ -11,7 +11,11 @@
     <!-- Bootstrap core CSS -->
     <link href="{{ url_for('static',filename='css/bootstrap.min.css') }}" rel="stylesheet">
 
+    <!-- my css file -->
+    <link href="{{ url_for('static',filename='css/my.css') }}" rel="stylesheet">
+
     <script type="text/javascript" src="{{ url_for('static',filename='js/jquery-3.2.1.min.js') }}"></script>
+    <script type="text/javascript" src="{{ url_for('static',filename='ace/ace.js') }}"></script>
   </head>
 
   <body>
@@ -26,8 +30,14 @@
           <li class="nav-item inactive">
             <a class="nav-link" href="lexer">Lexer</a>
           </li>
+          <li class="nav-item inactive">
+            <a class="nav-link" href="opg">OPG Parser</a>
+          </li>
+          <li class="nav-item inactive">
+            <a class="nav-link" href="parser">Parser</a>
+          </li>
           <li class="nav-item active">
-            <a class="nav-link" href="#">OPG Parser <span class="sr-only">(current)</span></a>
+            <a class="nav-link" href="#">Interpreter <span class="sr-only">(current)</span></a>
           </li>
         </ul>
       </div>
@@ -35,34 +45,40 @@
     
 
     <div class="container">
-      <br />
-      <h3> Code </h3>
-      <div class="form-group">
-        <form id="codeform">
-          <textarea class="form-control" rows="10" id="codearea" name="code"></textarea>
+      <div class="row">
+        <div class="col">
+          <h3> P-Code </h3>
+          <pre id="editor" name="code" style="height: 500px;"> </pre>
           <br />
           <input id="input-file" name="input-file" type="file" class="file" onchange=loadFile()>
           <br />
           <br />
-          <button type="submit" class="btn btn-secondary">Run</button>
-        </form>
-      </div>
-
-      <hr>
-      <div id="result">
+          <hr>
+          <h5> Input </h5>
+          <input class="form-control" id="stdin">
+          <br />
+          <button type="submit" id="submit" class="btn btn-secondary">Run</button>
+        </div>
+        <div class="col">
+          <h3> Result </h3>
+          <pre id="result" style="white-space: pre-wrap; word-wrap: break-word;"></pre>
+        </div>
       </div>
     </div>
 
 
     <script>
-      $('#codeform').submit(function(e){
+      var editor = ace.edit("editor");
+      editor.getSession().setMode("ace/mode/pascal");
+
+      $('#submit').click(function(e){
           e.preventDefault();
           $.ajax({
-              url:'/api/v1/lexer',
+              url:'/api/v1/interpreter',
               type:'post',
-              data:$('#codeform').serialize(),
+              data:{'code': editor.getValue(), 'in': $('#stdin').val()},
               success: function(response){
-                  $('#result').html('<pre>'+response+'</pre>');
+                  $('#result').html(response);
               }
           });
       });
@@ -73,7 +89,7 @@
             var reader = new FileReader();
             reader.readAsText(file, "UTF-8");
             reader.onload = function (evt) {
-                $("#codearea").val(evt.target.result);
+                $("#code").val(evt.target.result);
             }
             reader.onerror = function (evt) {
                 alert("error reading file");

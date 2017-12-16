@@ -1,11 +1,11 @@
 class LexerError(Exception):
-    def __init__(self, message='Error', pos=(0, 0)):
+    def __init__(self, message='Lexer error', pos=(0, 0)):
         self.message = message
         self.pos = pos
 
 
 class ParserError(Exception):
-    def __init__(self, message='Error', pos=(0, 0)):
+    def __init__(self, message='Parser error', pos=(0, 0)):
         self.message = message
         self.pos = pos
 
@@ -27,3 +27,8 @@ class WrongSymbolType(ParserError):
         self.message = message
         self.pos = pos
 
+
+class InterpreterError(Exception):
+    def __init__(self, message='Interpreter error', ln=0):
+        self.message = message
+        self.ln = ln

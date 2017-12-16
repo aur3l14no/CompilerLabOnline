@@ -6,10 +6,10 @@ procedure swap;
         temp := x;
         x := y;
         y := temp
-    end
+    end;
 
 procedure mod;
-    x := x-x/y*y;;
+    x := x-x/y*y;
 
 begin
     x := a;
