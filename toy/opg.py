@@ -90,7 +90,7 @@ class OPGEngine:
                             if x == right[i]:
                                 insert(self.priority_tab, (a, right[i+1]), 1)
             return True
-        except Exception as e:
+        except Exception:
             print('Not OPG')
             return False
 
@@ -115,7 +115,8 @@ class OPGEngine:
             print()
 
     def analyse(self, program):
-        template = '{step:>4}    {stack:{program_length}}    {priority:^8}    {cur_sym:^7}    {remaining:{program_length}}'\
+        template = \
+            '{step:>4}    {stack:{program_length}}    {priority:^8}    {cur_sym:^7}    {remaining:{program_length}}'\
             .replace('{program_length}', str(max(8, len(program))))
         stack = []
         cur = 0

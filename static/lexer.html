@@ -87,7 +87,7 @@
             reader.readAsText(file, "UTF-8");
             reader.onload = function (evt) {
                 $("#codearea").html(evt.target.result);
-            }
+            };
             reader.onerror = function (evt) {
                 alert("error reading file");
             }

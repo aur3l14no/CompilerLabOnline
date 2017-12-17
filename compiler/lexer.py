@@ -55,7 +55,6 @@ class Lexer:
         return self.program.split('\n')[ln-1].strip()
 
 
-
 def main():
     lexer = Lexer()
     with open('../doc/program.txt') as f:

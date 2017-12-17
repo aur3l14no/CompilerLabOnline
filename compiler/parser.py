@@ -122,18 +122,17 @@ class Parser:
                 # print('[%d]' % ln, line)
                 print(line)
             return self.pcode.get()
-        except ParserError as e:
+        except CompilerError as e:
             e.pos = self.lexer.pos
             print('[%d] %s' % (e.pos[0], self.lexer.get_line(e.pos[0])), file=sys.stderr)
             print('*** %s at %s' % (e.message, str(e.pos)), file=sys.stderr)
 
-    '''
-    The following is rec-descent parser. 
-    Each handler will move forward 1 token before return, therefore self.current_token is assigned at 
-    the beginning of each function. 
-    '''
 
     def _program(self):
+        """The following is rec-descent parser.
+        Each handler will move forward 1 token before return, therefore self.current_token is assigned at
+        the beginning of each function.
+        """
         self._forward()
         self.table.enter(Record())
         self._block(3)

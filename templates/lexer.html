@@ -82,7 +82,7 @@
             reader.readAsText(file, "UTF-8");
             reader.onload = function (evt) {
                 $("#code").val(evt.target.result);
-            }
+            };
             reader.onerror = function (evt) {
                 alert("error reading file");
             }

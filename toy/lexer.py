@@ -19,8 +19,6 @@ class LexerEngine:
 
     def process(self, program):
         cur = 0
-        ret = ''
-        error = ''
         while cur < len(program):
             max_length = 0
             token = ()

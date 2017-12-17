@@ -83,13 +83,12 @@
             reader.readAsText(file, "UTF-8");
             reader.onload = function (evt) {
                 editor.setValue(evt.target.result);
-            }
+            };
             reader.onerror = function (evt) {
                 alert("error reading file");
             }
         }
-      };
-
+      }
       $('#submit').click(function(e){
           e.preventDefault();
           $.ajax({

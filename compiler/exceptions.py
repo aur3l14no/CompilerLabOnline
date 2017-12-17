@@ -1,10 +1,16 @@
-class LexerError(Exception):
+class CompilerError(Exception):
+    def __init__(self, message='Error', pos=(0, 0)):
+        self.message = message
+        self.pos = pos
+
+
+class LexerError(CompilerError):
     def __init__(self, message='Lexer error', pos=(0, 0)):
         self.message = message
         self.pos = pos
 
 
-class ParserError(Exception):
+class ParserError(CompilerError):
     def __init__(self, message='Parser error', pos=(0, 0)):
         self.message = message
         self.pos = pos
@@ -28,7 +34,7 @@ class WrongSymbolType(ParserError):
         self.pos = pos
 
 
-class InterpreterError(Exception):
+class InterpreterError(CompilerError):
     def __init__(self, message='Interpreter error', ln=0):
         self.message = message
         self.ln = ln
