@@ -42,7 +42,7 @@ class Lexer:
                 raise LexerError('Unidentified character', self.pos)
             self.cur += len(token.value)
             self.pos[1] = self.cur - last_line_count
-            if token.type is 'BLANK':
+            if token.type == 'BLANK':
                 if token.value is '\n':
                     last_line_count = self.cur
                     self.pos[0] += 1
