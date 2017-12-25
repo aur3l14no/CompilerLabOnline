@@ -1,8 +1,7 @@
 from compiler.lexer import Lexer, Token
 from compiler.exceptions import *
-from collections import namedtuple
 from enum import Enum
-from copy import copy, deepcopy
+from copy import deepcopy
 import sys
 
 
@@ -69,13 +68,12 @@ class SymTable:
         raise UndefinedSymbol('Undefined symbol: %s' % name)
 
     def enter(self, record):
-        try:
-            self.get(record.name)
-        except ParserError:  # name not exists
-            self.table.append(deepcopy(record))
-            return
-        # name exists
-        raise DuplicateSymbol('Duplicate symbol name: %s' % record.name)
+        for existing_record in self.table[::-1]:
+            if record.level != existing_record.level:
+                break
+            if record.name == existing_record.name and record.type == existing_record.type:
+                raise DuplicateSymbol('Duplicate symbol name: %s' % record.name)
+        self.table.append(deepcopy(record))
 
 
 class PCodeManager:
@@ -126,7 +124,6 @@ class Parser:
             e.pos = self.lexer.pos
             print('[%d] %s' % (e.pos[0], self.lexer.get_line(e.pos[0])), file=sys.stderr)
             print('*** %s at %s' % (e.message, str(e.pos)), file=sys.stderr)
-
 
     def _program(self):
         """The following is rec-descent parser.
@@ -186,7 +183,7 @@ class Parser:
             self._forward()
             return dx
 
-        def _procedure():  # controversial, may require modifications
+        def _procedure():
             record = Record('procedure', None, None, self.current_level)
             while self.current_token.value == 'procedure':
                 self._forward()
@@ -408,7 +405,7 @@ class Parser:
 
 def main():
     parser = Parser()
-    with open('../doc/programs/program2.txt') as f:
+    with open('../doc/programs/program1.txt') as f:
         parser.load_program(f.read())
         parser.analyze()
 

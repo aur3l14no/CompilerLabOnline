@@ -108,7 +108,7 @@ class Interpreter:
 
 def main():
     parser = Parser()
-    with open('../doc/programs/test.txt') as f:
+    with open('../doc/programs/program1.txt') as f:
         parser.load_program(f.read())
         pcodes = parser.analyze()
         if pcodes:

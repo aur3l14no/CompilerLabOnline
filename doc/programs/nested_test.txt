@@ -1,0 +1,13 @@
+const a = 1;
+var f;
+procedure f;
+    var f;
+        procedure g;
+            begin
+                f := a;
+                write(f)
+            end
+        df
+
+    end
+procedure
