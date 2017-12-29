@@ -2,7 +2,7 @@
 
 ### 写在前面
 
-本项目开源，仓库地址为 https://github.com/Aur3l14no/CompilerLabOnline 如有雷同，不是我的问题。
+本项目开源，如有雷同，不是我的问题。仓库地址为 https://github.com/Aur3l14no/CompilerLabOnline 
 
 本项目用Python编写编译器部分，用Flask实现网页UI，DEMO地址为 http://139.199.104.107:4000/
 
