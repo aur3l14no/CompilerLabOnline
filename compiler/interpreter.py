@@ -95,15 +95,20 @@ class Interpreter:
                     if len(self.in_):
                         stack[base(code.l) + code.a] = int(self.in_[0])
                         self.in_ = self.in_[1:]
-                    else:
+                    elif __name__ == '__main__':
                         print('[In] ', end='')
                         stack[base(code.l)+code.a] = int(input())
+                    else:
+                        raise InterpreterError('Invalid input')
                 elif code.f == OpCode.WRT:
                     print('[Out]', stack[len(stack)-1])
                 if program_counter == 0:  # main returns
                     break
             print()
             print('Program finished!')
+        except InterpreterError as e:
+            e.ln = program_counter
+            raise e
         except Exception as e:
             raise InterpreterError(e, program_counter)  # though pc++ at the beginning, ln = pc+1
 

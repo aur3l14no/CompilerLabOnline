@@ -12,13 +12,14 @@ begin
         else
             begin
                 z := x;
-                write(z);
-                repeat
-                    write(z);
-                    z := z * x;
-                    t := t - 1
-                until
-                    t <= 0
+                if t > 1 then
+                begin
+                    repeat
+                        z := z * x;
+                        t := t - 1
+                    until
+                        t = 1
+                end
             end
 end;
 
