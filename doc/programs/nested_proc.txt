@@ -1,0 +1,27 @@
+const x = 1;
+procedure f;
+    var x;
+    procedure g;
+        var y;
+        begin
+            y := 2;
+            x := y;
+            write(x)
+        end;
+    procedure h;
+        var z;
+        begin
+            z := 3;
+            x := z;
+            write(x);
+            call g
+        end;
+    begin
+        x := 1;
+        write(x);
+        call h
+    end;
+begin
+    call f;
+    write(x)
+end.

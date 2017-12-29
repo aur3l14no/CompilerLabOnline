@@ -1,0 +1,27 @@
+var x, y, z;
+
+procedure fact;
+var t;
+begin
+    t := y;
+    if t < 0 then
+        z := 0
+    else
+        if t = 0 then
+            z := 1
+        else
+            begin
+                z := x;
+                write(z);
+                repeat
+                    write(z);
+                    z := z * x;
+                    t := t - 1
+                until
+                    t <= 0
+            end
+end;
+
+begin
+    read(x, y); call fact; write(z)
+end.
