@@ -32,6 +32,13 @@ class PCode:
 
 
 class Record:
+    """ Record is the element in SymTable
+    type is var, const or procedure
+    name is an identifier
+    value is value for const, level for var and procedure
+    address is None for const, offset for var and first pcode address for procedure
+    size is None as it is not used in my program
+    """
     def __init__(self, type_=None, name=None, value=None, level=None, address=None, size=0):
         self.type = type_
         self.name = name
@@ -46,6 +53,8 @@ class Record:
 
 
 class SymTable:
+    """ A table to store Records. By properly using get and enter, duplications are avoided
+    """
     def __init__(self):
         self.table = []
 
@@ -97,7 +106,7 @@ class PCodeManager:
 
 
 class Parser:
-    """Parser for PL/0 grammar
+    """ Parser for PL/0 grammar
     You need to create an instance of parser for each program
     """
     def __init__(self):
@@ -126,7 +135,7 @@ class Parser:
             print('*** %s at %s' % (e.message, str(e.pos)), file=sys.stderr)
 
     def _program(self):
-        """The following is rec-descent parser.
+        """ The following is rec-descent parser.
         Each handler will move forward 1 token before return, therefore self.current_token is assigned at
         the beginning of each function.
         """
@@ -239,7 +248,8 @@ class Parser:
                 self._forward()
                 self.pcode[code1].a = len(self.pcode)
                 self._statement()  # else statement
-            self.pcode[code1].a = len(self.pcode)
+            else:
+                self.pcode[code1].a = len(self.pcode)
             self.pcode[code2].a = len(self.pcode)
 
         elif self.current_token.value == 'while':
@@ -399,13 +409,13 @@ class Parser:
         else:
             b = token == self.current_token
         if not b:
-            raise ParserError('Expecting %s but current token is %s' % (str(token), str(self.current_token)),
+            raise ParserError('Expecting "%s" but current token is "%s"' % (str(token.value), str(self.current_token.value)),
                               self.lexer.pos)
 
 
 def main():
     parser = Parser()
-    with open('../doc/programs/program1.txt') as f:
+    with open('../doc/programs/nested_if.txt') as f:
         parser.load_program(f.read())
         parser.analyze()
 

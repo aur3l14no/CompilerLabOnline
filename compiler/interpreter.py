@@ -4,6 +4,8 @@ import sys
 
 
 class Interpreter:
+    """ The interpreter/vm for p-code
+    """
     def __init__(self):
         self.in_ = []
 
@@ -24,8 +26,8 @@ class Interpreter:
         stack = [0, 0, 0]
         '''
             .last stack.
-            base_pointer -> last level pointer, used to trace variable location in stack
-            +1           -> last base pointer
+            base_pointer -> last level pointer (Static Link), used to trace variable location in stack
+            +1           -> last base pointer (Dynamic Link)
             +2           -> last program counter
             +3           -> variable1
             +4           -> variable2
@@ -108,7 +110,7 @@ class Interpreter:
 
 def main():
     parser = Parser()
-    with open('../doc/programs/program1.txt') as f:
+    with open('../doc/programs/gcd.txt') as f:
         parser.load_program(f.read())
         pcodes = parser.analyze()
         if pcodes:
