@@ -36,11 +36,11 @@
           <li class="nav-item inactive">
             <a class="nav-link" href="parser">Parser</a>
           </li>
-          <li class="nav-item active">
-            <a class="nav-link" href="#">Interpreter <span class="sr-only">(current)</span></a>
-          </li>
           <li class="nav-item inactive">
-            <a class="nav-link" href="compiler">Compiler</a>
+            <a class="nav-link" href="#">Interpreter</span></a>
+          </li>
+          <li class="nav-item active">
+            <a class="nav-link" href="#">Compiler <span class="sr-only">(current)</span></a>
           </li>
         </ul>
       </div>
@@ -50,7 +50,7 @@
     <div class="container">
       <div class="row">
         <div class="col">
-          <h3> P-Code </h3>
+          <h3> PL/0 </h3>
           <pre id="editor" name="code" style="height: 500px;"></pre>
           <br />
           <input id="input-file" name="input-file" type="file" class="file" onchange=loadFile()>
@@ -77,7 +77,7 @@
       $('#submit').click(function(e){
           e.preventDefault();
           $.ajax({
-              url:'/api/v1/interpreter',
+              url:'/api/v1/compiler',
               type:'post',
               data:{'code': editor.getValue(), 'in': $('#stdin').val()},
               success: function(response){

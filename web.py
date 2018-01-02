@@ -9,10 +9,15 @@ from compiler.parser import Parser, OpCode, PCode
 from compiler.interpreter import Interpreter
 from compiler.exceptions import *
 import sys
+import subprocess
+import os
+
 
 app = Flask(__name__)
 
 PORT = 4000
+
+os.chdir(r'D:\MyProjects\CompilerLabOnline')
 
 lexer_engine = lexer.LexerEngine()
 
@@ -28,7 +33,7 @@ def show_opg():
     return render_template('opg.html')
 
 
-@app.route("/")
+# @app.route("/")
 @app.route("/parser")
 def show_parser():
     return render_template('parser.html')
@@ -38,6 +43,11 @@ def show_parser():
 def show_interpreter():
     return render_template('interpreter.html')
 
+
+@app.route("/")
+@app.route("/compiler")
+def show_compiler():
+    return render_template('compiler.html')
 
 @app.route("/api/v1/lexer", methods=['POST'])
 def api_lexer():
@@ -101,6 +111,22 @@ def api_interpreter():
         return t.getvalue()
     else:
         return s.getvalue()
+
+
+@app.route("/api/v1/compiler", methods=['POST'])
+def api_compiler():
+    program = request.form['code'].strip()
+    with open('test.pl0', 'w+') as f:
+        f.write(program.replace('\r\n', '\n'))
+    p = subprocess.Popen('pl0.exe',
+                         stdin=subprocess.PIPE,
+                         stdout=subprocess.PIPE,
+                         stderr=None,
+                         shell=True,
+                         universal_newlines=True)
+    outs, errs = p.communicate('test.pl0\n'+request.form['in'])
+    # print(outs)
+    return outs
 
 
 if __name__ == "__main__":

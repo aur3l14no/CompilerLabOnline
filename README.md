@@ -1,5 +1,7 @@
 ## 编译原理大作业（PL/0编译器与P-Code解释器）
 
+[TOC]
+
 ### 写在前面
 
 本项目开源，如有雷同，不是我的问题。仓库地址为 https://github.com/Aur3l14no/CompilerLabOnline 
@@ -11,6 +13,91 @@
 Python 3.6 + Flask
 
 执行 `python3 web.py` 即可启动
+
+### 运行截图
+
+![screenshot](D:\MyProjects\CompilerLabOnline\doc\img\screenshot.png)
+
+### 样例
+
+#### 样例1（嵌套的procedure）
+
+```pascal
+const x = 1;
+procedure f;
+    var x;
+    procedure g;
+        var y;
+        begin
+            y := 2;
+            x := y;
+            write(x)
+        end;
+    procedure h;
+        var z;
+        begin
+            z := 3;
+            x := z;
+            write(x);
+            call g
+        end;
+    begin
+        x := 1;
+        write(x);
+        call h
+    end;
+begin
+    call f;
+    write(x)
+end.
+```
+
+![proc](D:\MyProjects\CompilerLabOnline\doc\img\proc.PNG)
+
+#### 样例2（错误提示）
+
+```pascal
+var x,y,z,q,r;
+procedure multiply;
+var a,b
+begin a:=u;b:=y;z:=c
+while b>0 do
+begin
+if odd b do z:=z+a;
+a:=2a;b:=b/2;
+end
+end;
+procedure divide
+var w;
+const two=2,three:=3;
+begin r=x;q:=0 w:=y;
+while w<=r do w:=two*w;
+while w>y
+begin q:=(2*q;w:=w/2);
+if w<=r then
+begin r:=r-w q:=q+1
+end
+end
+end;
+procedure gcd;
+var f,g;
+begin f:=x;g:=y
+while f<>g do
+begin if f<g then g:=g-f;
+if g<f then g:= f-g;
+z:=f
+end;
+begin
+x:=m;y:=n;call multiply;
+x:=25;y:=3;call divide;
+x:=84;y:=36;call gcd;
+call x; x:=gcd; gcd=x
+end
+```
+
+![error](D:\MyProjects\CompilerLabOnline\doc\img\error.PNG)
+
+**其他样例在programs文件夹中，这里篇幅所限不再赘述**
 
 ### 作业要求
 
