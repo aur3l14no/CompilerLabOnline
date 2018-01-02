@@ -16,7 +16,7 @@ Python 3.6 + Flask
 
 ### 运行截图
 
-![screenshot](D:\MyProjects\CompilerLabOnline\doc\img\screenshot.png)
+![screenshot](doc/img/screenshot.png)
 
 ### 样例
 
@@ -52,7 +52,7 @@ begin
 end.
 ```
 
-![proc](D:\MyProjects\CompilerLabOnline\doc\img\proc.PNG)
+![proc](doc/img/proc.PNG)
 
 #### 样例2（错误提示）
 
@@ -95,7 +95,7 @@ call x; x:=gcd; gcd=x
 end
 ```
 
-![error](D:\MyProjects\CompilerLabOnline\doc\img\error.PNG)
+![error](doc/img/error.PNG)
 
 **其他样例在programs文件夹中，这里篇幅所限不再赘述**
 
